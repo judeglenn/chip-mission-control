@@ -21,8 +21,13 @@ struct ContentView: View {
                     }
                     Divider().padding(.leading, 12)
 
-                    SectionContainer(title: "Quick Actions", icon: "bolt.fill") {
-                        QuickActionsView()
+                    SectionContainer(title: "Active Projects", icon: "folder.badge.gearshape") {
+                        ActiveProjectsView()
+                    }
+                    Divider().padding(.leading, 12)
+
+                    SectionContainer(title: "Shortcuts", icon: "bolt.fill") {
+                        ShortcutsView()
                     }
                     Divider().padding(.leading, 12)
 
@@ -259,20 +264,103 @@ struct CronJobRow: View {
     }
 }
 
-// MARK: - Quick Actions
+// MARK: - Active Projects
 
-struct QuickActionsView: View {
+struct Project: Identifiable {
+    let id = UUID()
+    let name: String
+    let description: String
+    let icon: String
+    let color: Color
+    let action: () -> Void
+}
+
+struct ActiveProjectsView: View {
+    let projects: [Project] = [
+        Project(
+            name: "Jamf App Inventory",
+            description: "localhost:3000",
+            icon: "laptopcomputer",
+            color: .blue,
+            action: {
+                if let url = URL(string: "http://localhost:3000") {
+                    NSWorkspace.shared.open(url)
+                }
+            }
+        ),
+        Project(
+            name: "QM Grant Strategy",
+            description: "Google Doc",
+            icon: "doc.text.fill",
+            color: .green,
+            action: {
+                if let url = URL(string: "https://docs.google.com/document/d/1KVKd5reGiBQWlQ725YWYtb_gorrjuOOSb1bYtvmeMYU/edit") {
+                    NSWorkspace.shared.open(url)
+                }
+            }
+        ),
+        Project(
+            name: "ai-agent-homelab",
+            description: "GitHub repo",
+            icon: "chevron.left.forwardslash.chevron.right",
+            color: .purple,
+            action: {
+                if let url = URL(string: "https://github.com/judeglenn/ai-agent-homelab") {
+                    NSWorkspace.shared.open(url)
+                }
+            }
+        ),
+    ]
+
+    var body: some View {
+        VStack(spacing: 4) {
+            ForEach(projects) { project in
+                Button(action: project.action) {
+                    HStack(spacing: 9) {
+                        Image(systemName: project.icon)
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(project.color)
+                            .frame(width: 16)
+
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text(project.name)
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundColor(.primary)
+                                .lineLimit(1)
+                            Text(project.description)
+                                .font(.system(size: 10))
+                                .foregroundColor(.secondary)
+                        }
+                        Spacer()
+                        Image(systemName: "arrow.up.right")
+                            .font(.system(size: 9))
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.vertical, 4)
+                    .padding(.horizontal, 6)
+                    .background(Color.primary.opacity(0.04))
+                    .cornerRadius(6)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+}
+
+// MARK: - Shortcuts
+
+struct ShortcutsView: View {
     var body: some View {
         VStack(spacing: 5) {
             HStack(spacing: 6) {
-                ActionButton(title: "Open Workspace", icon: "folder.fill", color: .blue) {
+                ActionButton(title: "Telegram", icon: "paperplane.fill", color: Color(red: 0.17, green: 0.60, blue: 0.87)) {
+                    if let url = URL(string: "tg://") {
+                        NSWorkspace.shared.open(url)
+                    }
+                }
+                ActionButton(title: "Workspace", icon: "folder.fill", color: .blue) {
                     NSWorkspace.shared.open(
                         URL(fileURLWithPath: "/Users/chip/.openclaw/workspace")
-                    )
-                }
-                ActionButton(title: "View Logs", icon: "doc.text.fill", color: .orange) {
-                    NSWorkspace.shared.open(
-                        URL(fileURLWithPath: "/tmp/openclaw/")
                     )
                 }
             }
@@ -282,7 +370,11 @@ struct QuickActionsView: View {
                         NSWorkspace.shared.open(url)
                     }
                 }
-                Spacer()
+                ActionButton(title: "View Logs", icon: "doc.text.fill", color: .orange) {
+                    NSWorkspace.shared.open(
+                        URL(fileURLWithPath: "/tmp/openclaw/")
+                    )
+                }
             }
         }
     }
