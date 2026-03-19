@@ -278,10 +278,10 @@ struct Project: Identifiable {
 struct ActiveProjectsView: View {
     let projects: [Project] = [
         Project(
-            name: "Jamf App Inventory",
-            description: "localhost:3000",
+            name: "OrchardPatch",
+            description: "localhost:3000 · orchardpatch.com",
             icon: "laptopcomputer",
-            color: .blue,
+            color: Color(red: 0.18, green: 0.31, blue: 0.09),
             action: {
                 if let url = URL(string: "http://localhost:3000") {
                     NSWorkspace.shared.open(url)
